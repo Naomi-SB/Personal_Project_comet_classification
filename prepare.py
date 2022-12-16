@@ -3,14 +3,16 @@ from sklearn.model_selection import train_test_split
 
 
 def pre_processing(df):
-    df=df.drop(columns=['DT','A1', 'A2', 'A3', 'n_obs_used', 'per_y','condition_code', 'ad'])
+    df=df.drop(columns=['e','DT','A1', 'A2', 'A3', 'n_obs_used', 'per_y','condition_code', 'ad'])
     df['tp_cal']=df['tp_cal'].str.split(pat='.').str[0]
     df['tp_cal']=df['tp_cal'].str.split(pat='-').str[0]
     df=df.drop(index=[0,1])
     df['tp_cal'] = df['tp_cal'].astype('int')
-    df = pd.get_dummies(df, columns = ['two_body'], drop_first=False)
+    df = pd.get_dummies(df, columns = ['two_body'], drop_first=False, dummy_na = True)
     df = df.set_index('full_name')
-    df.rename({'class': 'orbit'}, axis=1, inplace=True)
+    df.rename({'class': 'orbit', 'q':'peri_distance', 'i':'inclination', 'om':'node', 'w':'perihelion','tp_cal':'time_of_peri','data_arc':'days_of_data_arc'}, axis=1, inplace=True)
+    df = df.dropna()
+    df = df[['orbit','perihelion', 'peri_distance','time_of_peri', 'inclination', 'node', 'days_of_data_arc', 'two_body_T', 'two_body_F', 'two_body_nan']]
     return df
 
 ###################################################################################
